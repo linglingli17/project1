@@ -5,6 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Administrator on 2017/2/10.
+ * LUNManager is a singleton class instance which functions as a simulator
+ * to manage a pool of LUNs.
+ *
  */
 public class LUNManager implements Runnable{
     private static AtomicInteger nextAvailbleId;
@@ -32,6 +35,11 @@ public class LUNManager implements Runnable{
         unexportedLUNMap = new ConcurrentHashMap<Integer,LUNNode>();
     }
 
+    /**
+     *  Create a single LUN that will allocate a unique id as a key to put to the free LUN pool
+     * @param size   the initial size of a LUN to create
+     * @return     the id of the newly created LUN
+     */
     public Integer createLUN(Integer size)
     {
     	Integer id = nextAvailbleId.incrementAndGet();
@@ -43,6 +51,13 @@ public class LUNManager implements Runnable{
         return null;
     }
 
+    /**
+     * Create the number of Count LUN, each has an initial size of nodeSize.Each
+     * LUN will be put to the free LUN pool
+     * @param count   The number of LUN to create
+     * @param nodeSize  The initial size for each LUN
+     * @return true if all required LUN created successfully, false if any is failed
+     */
     public  boolean createMultipleLUNs(Integer count,Integer nodeSize)
     {
         for (Integer i = 0; i < count; ++i)
@@ -83,6 +98,13 @@ public class LUNManager implements Runnable{
 //        return false;
 //    }
 
+    /**
+     * Export a specific LUN to the specified host. The LUN exported will be removed from the free pool
+     * and add to the map of exportLUN for manangement.
+     * @param idLUN   The id of the LUN, which is the unique key for this LUN when initially created
+     * @param hostID  The host ID to export this LUN to
+     * @return   true if the specified LUN is free for use, and successfully exported to a host.
+     */
     public boolean exportLUN(Integer idLUN,Integer hostID)
     {
         if(hostID == null)
@@ -107,13 +129,18 @@ public class LUNManager implements Runnable{
         return false;
     }
 
-    public void unexportLUN(Integer idLUN)
+    /**
+     * Unexport a specific LUN, which will cleared of the export host information, remmoved from
+     * the export map, and add to the un-exported map for management
+     * @param idLUN   The id of the LUN
+     */
+    public boolean unexportLUN(Integer idLUN)
     {
     	LUNNode node = null;
         synchronized (exportLock) {
 	    	node = exportedLUNMap.get(idLUN);
 	        if(node == null)
-	            return;
+	            return false;
 	        //Clear the export info field of the LUN node after unexported
 	        node.setExportHostID(null);
 	
@@ -121,12 +148,19 @@ public class LUNManager implements Runnable{
 	        exportedLUNMap.remove(idLUN);
     	}
         unexportedLUNMap.put(idLUN, node);
-    	
+    	return true;
     }
 
-    public void removeUnexportedLUN(Integer idLUN)
+    public boolean removeUnexportedLUN(Integer idLUN)
     {
-        unexportedLUNMap.remove(idLUN);
+        LUNNode node = null;
+        synchronized (exportLock) {
+            node = exportedLUNMap.get(idLUN);
+            if(node == null)
+                return false;
+            unexportedLUNMap.remove(idLUN);
+        }
+        return true;
     }
 
     public LUNNode getFreeLUNNode(Integer idLUN)
@@ -158,7 +192,12 @@ public class LUNManager implements Runnable{
         }
         return null;
     }
-    
+
+    /**
+     * Get the size of the LUN specified by the LUN ID
+     * @param idLUN   the ID of the LUN
+     * @return   the size of the LUN
+     */
     public int getLUNSize(Integer idLUN)
     {
         //Search the exported map
@@ -169,6 +208,11 @@ public class LUNManager implements Runnable{
         return 0;
     }
 
+    /**
+     * Get the exported hostID of the LUN
+     * @param idLUN  the ID of the LUN
+     * @return  the hostID of the LUN exported to
+     */
     public Integer getExportedHostID(Integer idLUN){
         //Search the exported map
         LUNNode node = getLUNNode(idLUN);
@@ -178,6 +222,11 @@ public class LUNManager implements Runnable{
         return null;
     }
 
+    /**
+     *  Expand the size of the LUN
+     * @param idLUN   the ID of the LUN
+     * @param capacity  the size to expand to
+     */
     public  void Expand(Integer idLUN, int capacity){
         LUNNode node = getLUNNode(idLUN);
         if(node != null){
@@ -185,6 +234,10 @@ public class LUNManager implements Runnable{
         }
     }
 
+    /**
+     * Persist the LUN info to file
+     * @param idLUN
+     */
     public void persist(Integer idLUN)
     {
         LUNNode node = getLUNNode(idLUN);
