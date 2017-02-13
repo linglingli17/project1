@@ -4,13 +4,13 @@ Usage: python reverselist.py -i [input list, string] -k [k node,integer]
 example 1, the normal case, the K is less than the length of the list 
 ```xml
 
-python reverselist.py -i 1234 -k 4
+python reverselist.py -i 1234567 -k 3
+input list= 1234567, K= 3
+----------------------
+the input list is:1->2->3->4->5->6->7
+----------------------
+the output list is:3->2->1->6->5->4->7
 
-input list= 1234, K= 4
-----------------------
-the input list is:1->2->3->4
-----------------------
-the output list is:4->3->2->1
 
 ```
 ---------------
