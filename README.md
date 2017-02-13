@@ -39,6 +39,10 @@ body "id=[:lunid]&hostid=[:hostid]"
 ```
 ---------------
 Unexport a LUN
+```xml
+
 Method PUT 
 body "id=[:lunid]"
+
+```
 ---------------
