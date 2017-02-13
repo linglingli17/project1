@@ -1,5 +1,44 @@
+Test 1. Reverse list per K nodes
+==============================================
+Usage: python reverselist.py -i [input list, string] -k [k node,integer]
+example 1, the normal case, the K is less than the length of the list 
+```xml
+
+python reverselist.py -i 1234 -k 4
+
+input list= 1234, K= 4
+----------------------
+the input list is:1->2->3->4
+----------------------
+the output list is:4->3->2->1
+
+```
+---------------
+example 2, the K equals the lenght of the input list, the whole list is reversed
+```xml
+
+reverselist.py -i 1234567 -k 7
+
+input list= 1234567, K= 7
+----------------------
+the input list is:1->2->3->4->5->6->7
+----------------------
+the output list is:7->6->5->4->3->2->1
+
+```
+---------------
+example 3, if K node is 0 or 1, the list keep unchanged
+```xml
+
+reverselist.py -i 1234567 -k 1
+input list= 1234567, K= 1
+----------------------
+the input list is:1->2->3->4->5->6->7
+----------------------
+the output list is:1->2->3->4->5->6->7
 
 
+```
 Test 3. LUNWebservice - A web service to provide RESTful API to simulate storage array management 
 ==============================================
 The web service is built using Spark 2.5.5, refer to https://groups.google.com/d/forum/sparkjava

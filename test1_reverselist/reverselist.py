@@ -1,10 +1,21 @@
-
+import argparse
+import sys
 
 class Node(object):
     def __init__(self,data=None,next=None):
         self.data = data
         self.next = next
 
+def ParseArgs():
+    #desc = 'usage:'
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-i',action='store',dest='list',help='The input list')
+
+    parser.add_argument('-k',action='store',dest='knode',help='the number of nodes to reverse')
+
+    args = parser.parse_args()
+    return args
 
 def ReverseList(head):
     if head == None:
@@ -36,6 +47,8 @@ def ReverseList(head):
 def ReverseListPerKNodes(head, K):
     if head == None:
         return None
+    if K == 0 or K == 1:
+        return head
 
     #get the sublist with lenth K
     start = head
@@ -79,13 +92,52 @@ def ReverseListPerKNodes(head, K):
 
 
 if __name__=='__main__':
-    L = Node(1,Node(2,Node(3,Node(4,Node(5,Node(6, Node(7)))))))
+
+    args = ParseArgs()
+    if args != None:
+        print('input list= %s, K= %s' % (args.list, args.knode))
+    else:
+        exit(0)
+        # pass
+
+    liststr = args.list
+    #liststr= '12345'
+    k = int(args.knode)
+    #k = 2
+
+    head = tail = None
+    for nodeindex in range(len(liststr)):
+        node = Node(liststr[nodeindex])
+        if head == None:
+            #head node
+            head = node
+            tail = head
+
+        else:
+            #link the node to the tail
+            tail.next = node
+            tail = node
+
+    #L = Node(1,Node(2,Node(3,Node(4,Node(5,Node(6, Node(7)))))))
     #h = ReverseList(L)
-    r = ReverseListPerKNodes(L,3)
-    p = r
-    while p != None:
-        print(p.data)
+    tmp = '->'
+    in_list = []
+    print ('----------------------')
+    p = head
+    while(p!= None):
+        in_list.append(p.data)
         p = p.next
+
+    print ('the input list is:' + tmp.join(in_list))
+    r = ReverseListPerKNodes(head,k)
+    p = r
+
+    print ('----------------------')
+    out_list = []
+    while p != None:
+        out_list.append(p.data)
+        p = p.next
+    print('the output list is:' + tmp.join(out_list))
 
 
 
