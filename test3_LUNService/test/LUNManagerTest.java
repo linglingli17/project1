@@ -18,13 +18,14 @@ class LUNManagerTest {
         lunManager = LUNManager.getInstance();
         Assertions.assertNotNull(lunManager,"Create single instance LUNManager failed");
         System.out.printf("Get a single instance of LUNManager %s\n",lunManager.toString());
-        //nodeIDSimpleTest = lunManager.createLUN(1);
+        nodeIDSimpleTest = lunManager.createLUN(10);
     }
 
     @AfterEach
     void tearDown() {
         System.out.println("in tearDown");
         lunManager = null;
+        nodeIDSimpleTest = 0;
 
     }
 
@@ -45,45 +46,47 @@ class LUNManagerTest {
     @Test
     void exportLUN_unexportLUN() {
         System.out.println("in exportLUN_unexportLUN");
-        Integer idLUN = lunManager.createLUN(1);
-        if (idLUN != null)
+
+            //Integer orgSize =N(1);
+        if (nodeIDSimpleTest != null)
         {
-            //Get the original size of the node
-            Integer orgSize = lunManager.getLUNSize(idLUN);
-            Assertions.assertEquals(orgSize,new Integer(1));
-
-            lunManager.Expand(idLUN, 10);
-            Integer newSize = lunManager.getLUNSize(idLUN);
-            Assertions.assertEquals(newSize,new Integer(10));
-
-            lunManager.exportLUN(idLUN,1);
-            Integer hostID = lunManager.getExportedHostID(idLUN);
+            lunManager.exportLUN(nodeIDSimpleTest,1);
+            Integer hostID = lunManager.getExportedHostID(nodeIDSimpleTest);
             Assertions.assertEquals(new Integer(1),hostID);
 
-            lunManager.unexportLUN(idLUN);
-            hostID = lunManager.getExportedHostID(idLUN);
+            lunManager.unexportLUN(nodeIDSimpleTest);
+            hostID = lunManager.getExportedHostID(nodeIDSimpleTest);
             Assertions.assertEquals(null,hostID);
 
-            LUNNode freenode = lunManager.getFreeLUNNode(idLUN);
+            LUNNode freenode = lunManager.getFreeLUNNode(nodeIDSimpleTest);
             Assertions.assertNull(freenode);
 
-            lunManager.removeUnexportedLUN(idLUN);
-            LUNNode node = lunManager.getLUNNode(idLUN);
-            Assertions.assertNull(node);
+            lunManager.removeUnexportedLUN(nodeIDSimpleTest);
+            LUNNode node_remove = lunManager.getLUNNode(nodeIDSimpleTest);
+            Assertions.assertNull(node_remove);
         }
     }
 
 
     @Test
-    void removeUnexportedLUN() {
-
+    void persistLUN() {
+        Boolean res = lunManager.persist(nodeIDSimpleTest);
+        Assertions.assertTrue(res);
     }
 
     @Test
     void getLUNSize() {
-
+        int size = lunManager.getLUNSize(nodeIDSimpleTest);
+        Assertions.assertEquals(10,size);
     }
 
+    @Test
+    void expandSize()
+    {
+        lunManager.Expand(nodeIDSimpleTest, 20);
+        Integer newSize = lunManager.getLUNSize(nodeIDSimpleTest);
+        Assertions.assertEquals(newSize,new Integer(20));
+    }
 
     @Test
     void concurrentCreate() throws InterruptedException{

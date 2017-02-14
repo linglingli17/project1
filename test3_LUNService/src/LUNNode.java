@@ -3,10 +3,7 @@
  */
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 
 public class LUNNode implements Serializable {
@@ -44,19 +41,27 @@ public class LUNNode implements Serializable {
        	this.size = capacity;
     }
 
-    @Override
-    public String toString(){
-        return "[LUN ID " + ID + ",export Host ID " + exportHostID + ",size " + storage.size() + "]";
+    //@Override
+    //public String toString(){
+        //return "[LUN ID " + ID + ",export Host ID " + exportHostID + ",size " + storage.size() + "]";
+    //}
+
+    private void writeObject( ObjectOutputStream oos) throws IOException{
+        //oos.defaultWriteObject();
+        String str = new String("LUN ID " + ID + ",export Host ID " + exportHostID + ",size " + size);
+        oos.writeBytes(str);
     }
-    public void persist(){
+    public boolean persist(){
         String fileName = ID + ".txt";
         File file = new File(fileName);
         try {
             ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream(file));
             outStream.writeObject(this);
             outStream.close();
+            return true;
         }catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

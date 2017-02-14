@@ -269,12 +269,14 @@ public class LUNManager implements Runnable{
      * Persist the LUN info to file
      * @param idLUN
      */
-    public void persist(Integer idLUN)
+    public boolean persist(Integer idLUN)
     {
         LUNNode node = getLUNNode(idLUN);
+        boolean res = false;
         if(node != null){
-            node.persist();
+            res = node.persist();
         }
+        return res;
     }
 
     @Override
