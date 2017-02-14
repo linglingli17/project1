@@ -62,6 +62,7 @@ Create single LUN
 
 ```xml
 
+http://localhost:4567/lun
 Method POST 
 body "size=2"
 
@@ -70,6 +71,7 @@ body "size=2"
 Create Multiple LUNs
 ```xml
 
+http://localhost:4567/luns
 Method POST 
 body "size=2&count=10"
 

@@ -9,8 +9,10 @@ public class LUNWebservice {
 
         //Request to create a LUN, will return the ID , the size for the LUN
         //is sent in the post body e.g. size=4
-        post("/luns", (request, response) -> {
-            String sizestr = request.params("size");
+        post("/lun", (request, response) -> {
+
+            String sizestr = request.queryParams("size");
+            System.out.print(sizestr);
             Integer size = new Integer(sizestr);
             Integer idLUN= null;
             if(size != null){
@@ -18,7 +20,7 @@ public class LUNWebservice {
             }
             if(idLUN != null){
                 response.status(201); // 201 Created
-                return "create LUN id: " + idLUN + "with size:" + sizestr;
+                return "create LUN id: " + idLUN + " with size:" + size;
             }
             else{
                 response.status(401);
@@ -29,10 +31,12 @@ public class LUNWebservice {
         //Request to create the number of count LUNs, each has initial size
         //The param is sent in the post body e.g. count=5&size=10
         post("/luns", (request, response) -> {
-            Integer size = new Integer(request.params("size"));
-            Integer count = new Integer(request.params("count"));
-
+            Integer size = new Integer(request.queryParams("size"));
+            Integer count = new Integer(request.queryParams("count"));
+            System.out.println(size);
+            System.out.println(count);
             if(size != null && count!= null){
+                System.out.println("start to create multiple");
                 if(lunManager.createMultipleLUNs(count,size)){
                     response.status(201);
                     return "Action succeeded";
@@ -45,7 +49,7 @@ public class LUNWebservice {
 
         //get the information of a LUN
         get("/luns/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.params(":id"));
+            Integer idLUN = new Integer(request.queryParams(":id"));
             if (idLUN != null) {
                 int size = lunManager.getLUNSize(idLUN);
                 Integer hostID = lunManager.getExportedHostID(idLUN);
@@ -81,8 +85,8 @@ public class LUNWebservice {
 
         //export the LUN to a specific host, the request body eg. id=5&hostid=10
         put("/luns", (request, response) -> {
-            Integer idLUN = new Integer(request.params("id"));
-            Integer hostID = new Integer(request.params("hostid"));
+            Integer idLUN = new Integer(request.queryParams("id"));
+            Integer hostID = new Integer(request.queryParams("hostid"));
             if (idLUN != null) {
                 if(lunManager.exportLUN(idLUN,hostID)){
                     response.status(201);
@@ -96,7 +100,7 @@ public class LUNWebservice {
 
         //unexport the LUN,the request body eg. id=5&hostid=0
         put("/luns/unexport/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.params(":id"));
+            Integer idLUN = new Integer(request.queryParams(":id"));
 
             if (idLUN != null) {
                 if( lunManager.unexportLUN(idLUN)){
@@ -110,7 +114,7 @@ public class LUNWebservice {
         });
 
         delete("/luns/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.params(":id"));
+            Integer idLUN = new Integer(request.queryParams(":id"));
 
             if (idLUN != null) {
                 if( lunManager.removeUnexportedLUN(idLUN)){
