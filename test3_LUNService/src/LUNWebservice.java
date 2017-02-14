@@ -57,12 +57,26 @@ public class LUNWebservice {
             }
         });
 
-        get("/luns/free", (request, response) -> {
-
-            int num = lunManager.getTotalFreeLuns();
-            response.status(201);
-            return "Total number of free LUN: " + num;
-
+        get("/luns", (request, response) -> {
+            String type = request.queryParams("type");
+            int num = 0;
+            if(type == "free") {
+                num = lunManager.getTotalFreeLuns();
+                response.status(201);
+                return "Total number of free LUNs: " + num;
+            }
+            else if(type=="exported")
+            {
+                num = lunManager.getTotalExportedLuns();
+                response.status(201);
+                return "Total number of exported LUNs: " + num;
+            }
+            else
+            {
+                num = lunManager.getTotalUnexportedLuns();
+                response.status(201);
+                return "Total number of unexported LUNs: " + num;
+            }
         });
 
         //export the LUN to a specific host, the request body eg. id=5&hostid=10

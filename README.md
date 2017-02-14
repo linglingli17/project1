@@ -46,7 +46,20 @@ Use RESTClient to send request to http://localhost:4567/luns
 
 Functions
 ---------------
+Query the current number of LUNs for different type: free, exported, and unexported
+
+Example for get the number of "free" type LUN
+```xml
+
+http://localhost:4567/luns
+Method GET 
+body "type=free"
+
+```
+---------------
+
 Create single LUN
+
 ```xml
 
 Method POST 
