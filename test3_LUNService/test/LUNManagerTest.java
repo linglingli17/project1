@@ -2,9 +2,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.*;
-import sun.rmi.server.InactiveGroupException;
 
-import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by Administrator on 2017/2/12.
@@ -15,21 +14,17 @@ class LUNManagerTest {
     private static Integer  nodeIDSimpleTest;
     @BeforeEach
     void setUp() {
-        //vector
-        //System.out.println("Run setUp");
-        //ArrayList<Byte> storage = new ArrayList<Byte>(3);
-        //for(Integer i = 0; i < 3; ++i) {
-         //   storage.add((byte)0);
-        //}
+
         lunManager = LUNManager.getInstance();
         Assertions.assertNotNull(lunManager,"Create single instance LUNManager failed");
-        //System.out.printf("Get a single instance of LUNManager %s\n",lunManager.toString());
+        System.out.printf("Get a single instance of LUNManager %s\n",lunManager.toString());
         //nodeIDSimpleTest = lunManager.createLUN(1);
     }
 
     @AfterEach
     void tearDown() {
-        //System.out.println("in tearDown");
+        System.out.println("in tearDown");
+        lunManager = null;
 
     }
 
@@ -44,7 +39,7 @@ class LUNManagerTest {
     void createMultipleLUNs() {
         System.out.println("in createMultipleLUNs");
         boolean ret = lunManager.createMultipleLUNs(3, 2);
-        //Assertions.assertTrue(ret);
+        Assertions.assertTrue(ret);
     }
 
     @Test
@@ -91,8 +86,33 @@ class LUNManagerTest {
 
 
     @Test
-    void persist() {
+    void concurrentCreate() throws InterruptedException{
+        int threadNum = 5;
+        int lunNum = 3;
 
+        CountDownLatch latch = new CountDownLatch(threadNum);
+
+        Integer totalLun = threadNum * lunNum;
+
+        for ( int i = 0; i < threadNum; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        for (int j = 0; j < lunNum; j++) {
+                            lunManager.createLUN(1);
+                            System.out.println( "created LUN id:" + j);
+                        }
+                        latch.countDown();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.exit(100);
+                    }
+                }
+            }).start();
+        }
+        latch.await();
+        Integer totalLUN_inpool = lunManager.getTotalFreeLuns();
+        Assertions.assertEquals(totalLun,totalLUN_inpool);
     }
-
 }
