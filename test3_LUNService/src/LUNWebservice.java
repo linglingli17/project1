@@ -49,7 +49,8 @@ public class LUNWebservice {
 
         //get the information of a LUN
         get("/luns/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.queryParams(":id"));
+            Integer idLUN = new Integer(request.params(":id"));
+            System.out.println("To retrieve the export informaton of LUN id=" + idLUN);
             if (idLUN != null) {
                 int size = lunManager.getLUNSize(idLUN);
                 Integer hostID = lunManager.getExportedHostID(idLUN);
@@ -100,7 +101,7 @@ public class LUNWebservice {
 
         //unexport the LUN,the request body eg. id=5&hostid=0
         put("/luns/unexport/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.queryParams(":id"));
+            Integer idLUN = new Integer(request.params(":id"));
 
             if (idLUN != null) {
                 if( lunManager.unexportLUN(idLUN)){
@@ -114,7 +115,7 @@ public class LUNWebservice {
         });
 
         delete("/luns/:id", (request, response) -> {
-            Integer idLUN = new Integer(request.queryParams(":id"));
+            Integer idLUN = new Integer(request.params(":id"));
 
             if (idLUN != null) {
                 if( lunManager.removeUnexportedLUN(idLUN)){

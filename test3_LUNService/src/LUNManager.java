@@ -62,7 +62,7 @@ public class LUNManager implements Runnable{
     {
         for (Integer i = 0; i < count; ++i)
         {
-            if( createLUN(nodeSize) != null ){
+            if( createLUN(nodeSize) == null ){
                 return false;
             }
         }
