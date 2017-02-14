@@ -235,6 +235,37 @@ public class LUNManager implements Runnable{
     }
 
     /**
+     * Get the total number of LUNs created and exist in the LUN pool
+     * @return the number of LUNs exist in the pool
+     */
+    public Integer getTotalNumLuns(){
+        return freeLUNPool.size() + exportedLUNMap.size() + unexportedLUNMap.size();
+    }
+
+    /**
+     * Get the total number of LUNs exist in the free LUN pool
+     * @return the number of free LUNs
+     */
+    public Integer getTotalFreeLuns(){
+        return freeLUNPool.size();
+    }
+
+    /**
+     * Get the number of exported LUNs
+     * @return the number of exported LUNs
+     */
+    public Integer getTotalExportedLuns(){
+        return exportedLUNMap.size();
+    }
+
+    /**
+     * Get the number of unexported LUNs
+     * @return the number of unexported LUNS
+     */
+    public Integer getTotalUnexportedLuns(){
+        return unexportedLUNMap.size();
+    }
+    /**
      * Persist the LUN info to file
      * @param idLUN
      */

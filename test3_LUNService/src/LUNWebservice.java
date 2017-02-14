@@ -57,6 +57,14 @@ public class LUNWebservice {
             }
         });
 
+        get("/luns/free", (request, response) -> {
+
+            int num = lunManager.getTotalFreeLuns();
+            response.status(201);
+            return "Total number of free LUN: " + num;
+
+        });
+
         //export the LUN to a specific host, the request body eg. id=5&hostid=10
         put("/luns", (request, response) -> {
             Integer idLUN = new Integer(request.params("id"));
